@@ -14,5 +14,6 @@
       <Button layoutX="118.0" layoutY="666.0" mnemonicParsing="false" onAction="#moveRightButtonClick" prefHeight="46.0" prefWidth="52.0" text="&gt;" />
       <Button layoutX="66.0" layoutY="666.0" mnemonicParsing="false" onAction="#pickButtonClick" prefHeight="46.0" prefWidth="52.0" text="Pick" />
       <Button layoutX="118.0" layoutY="712.0" mnemonicParsing="false" onAction="#spawnButtonClick" prefHeight="46.0" prefWidth="98.0" text="Spawn" />
+      <Button layoutX="14.0" layoutY="712.0" mnemonicParsing="false" onAction="#stopButtonClick" prefHeight="46.0" prefWidth="52.0" text="Finish" />
    </children>
 </Pane>

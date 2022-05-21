@@ -177,7 +177,6 @@ public class clientWindowController
         }
     }
 
-    @FXML
     public void spawnButtonClick()
     {
         try
@@ -190,4 +189,15 @@ public class clientWindowController
         }
     }
 
+    public void stopButtonClick()
+    {
+        try
+        {
+            c.send("STOP\n");
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }
