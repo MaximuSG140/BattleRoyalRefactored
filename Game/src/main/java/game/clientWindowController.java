@@ -55,33 +55,30 @@ public class clientWindowController
     public void startKeyListening()
     {
         var scene = canvas.getScene();
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                switch(keyEvent.getCode())
-                {
-                    case W:
-                        moveUpButtonClick();
-                        break;
-                    case A:
-                        moveLeftButtonClick();
-                        break;
-                    case S:
-                        moveDownButtonClick();
-                        break;
-                    case D:
-                        moveRightButtonClick();
-                        break;
-                    case SPACE:
-                        pickButtonClick();
-                        break;
-                    case ESCAPE:
-                        backToMenu();
-                        break;
-                    case E:
-                        spawnButtonClick();
-                        break;
-                }
+        scene.setOnKeyPressed(keyEvent -> {
+            switch(keyEvent.getCode())
+            {
+                case W:
+                    moveUpButtonClick();
+                    break;
+                case A:
+                    moveLeftButtonClick();
+                    break;
+                case S:
+                    moveDownButtonClick();
+                    break;
+                case D:
+                    moveRightButtonClick();
+                    break;
+                case E:
+                    pickButtonClick();
+                    break;
+                case ESCAPE:
+                    backToMenu();
+                    break;
+                case F:
+                    spawnButtonClick();
+                    break;
             }
         });
     }
@@ -123,9 +120,7 @@ public class clientWindowController
         for(var record : info.weaponInfo)
         {
             var slicedName = record.type.split("\\.");
-            StringBuilder imageName = new StringBuilder("/".concat(slicedName[slicedName.length - 1]));
-            imageName.append(".png");
-            field.drawImage(ImageFactory.getImage(imageName.toString()), record.x * CELL_SIZE_PIXEL, record.y * CELL_SIZE_PIXEL);
+            field.drawImage(ImageFactory.getImage("/".concat(slicedName[slicedName.length - 1]) + ".png"), record.x * CELL_SIZE_PIXEL, record.y * CELL_SIZE_PIXEL);
         }
         for(var record : info.playerInfo)
         {
