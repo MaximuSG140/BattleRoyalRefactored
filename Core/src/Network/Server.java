@@ -146,6 +146,7 @@ public class Server
         {
             try
             {
+                String sender;
                 Socket newConnection = socket.accept();
                 var reader = new BufferedReader(new InputStreamReader(newConnection.getInputStream()));
                 synchronized (connectedPlayers) {
@@ -156,9 +157,10 @@ public class Server
                             playerByName.put(name, new Player(name));
                         }
                     }
-                    pool.executeTask(getTaskForReadingCommands(newConnection), connectedPlayers.get(newConnection) + " receive commands");
-                    pool.executeTask(getTaskForSendingInfo(newConnection), connectedPlayers.get(newConnection) + " send frames");
+                    sender = connectedPlayers.get(newConnection);
                 }
+                    pool.executeTask(getTaskForReadingCommands(newConnection), sender + " receive commands");
+                    pool.executeTask(getTaskForSendingInfo(newConnection), sender + " send frames");
             }
             catch (IOException e)
             {

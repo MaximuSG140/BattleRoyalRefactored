@@ -30,16 +30,13 @@ public class DynamicThreadPool implements IAsynchronousTaskExecutor
             {
                 synchronized (threads)
                 {
-                    if (tasksExecuting.compareTo(threads.size()) == 0 && threads.size() < maxThreadCount)
+                    if (tasksExecuting.compareTo(threads.size()) <= 0 && threads.size() < maxThreadCount)/*!!!*/
                     {
                         addNewThread();
                     }
-                    else
-                    {
-                        taskQueue.notify();
-                    }
                 }
             }
+            taskQueue.notify();
         }
     }
 
