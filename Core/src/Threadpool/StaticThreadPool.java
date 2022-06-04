@@ -1,14 +1,15 @@
 package Threadpool;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class ThreadPool
+public class StaticThreadPool implements IAsynchronousTaskExecutor
 {
     private final int threadsNumber;
     private final PoolWorker[] threads;
-    private final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
+    private final Queue<Runnable> queue = new LinkedList<>();
 
-    public ThreadPool(int nThreads)
+    public StaticThreadPool(int nThreads)
     {
         this.threadsNumber = nThreads;
         threads = new PoolWorker[nThreads];
@@ -19,8 +20,8 @@ public class ThreadPool
             threads[i].start();
         }
     }
-
-    public void execute(Runnable task)
+    @Override
+    public void executeTask(Runnable task)
     {
         synchronized (queue)
         {

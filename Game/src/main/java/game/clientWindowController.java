@@ -5,31 +5,35 @@ import Model.Field;
 import Model.Game;
 import Network.Client;
 import View.FieldRenderParameters;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static game.menuController.CELL_SIZE_PIXEL;
-import static javafx.scene.input.KeyEvent.KEY_PRESSED;
+
 
 public class clientWindowController
 {
+    static final int TIME_BETWEEN_FRAMES_MILLISECONDS = 100;
     @FXML
     public Canvas canvas;
 
     private Client c;
 
-    private Thread drawer;
+    private Alert serverNotRespond = new Alert(Alert.AlertType.ERROR);
+
+    final private Timer fieldDrawTimer = new Timer();
 
     public void initialize()
     {
@@ -42,26 +46,68 @@ public class clientWindowController
     {
         c = new Client(name);
         c.connect(address);
+        serverNotRespond.setTitle("Error");
+        serverNotRespond.setHeaderText("Server not responds");
+        serverNotRespond.setContentText("Try to reconnect");
+    }
+
+
+    public void startKeyListening()
+    {
+        var scene = canvas.getScene();
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                switch(keyEvent.getCode())
+                {
+                    case W:
+                        moveUpButtonClick();
+                        break;
+                    case A:
+                        moveLeftButtonClick();
+                        break;
+                    case S:
+                        moveDownButtonClick();
+                        break;
+                    case D:
+                        moveRightButtonClick();
+                        break;
+                    case SPACE:
+                        pickButtonClick();
+                        break;
+                    case ESCAPE:
+                        backToMenu();
+                        break;
+                    case E:
+                        spawnButtonClick();
+                        break;
+                }
+            }
+        });
     }
 
     private void startDrawing()
     {
-        drawer = new Thread(()->
-        {
-            try {
-                while (c.isGameRunning()) {
-                    drawInfo(c.getCachedInfo());
-                    Thread.sleep(500);
-                }
-                if(c.getScores() != null)
+        fieldDrawTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run()
+            {
+                if(c.isServerIsUp() && c.isGameRunning())
                 {
-                    drawScores(c.getScores());
+                    drawInfo(c.getCachedInfo());
+                }
+                else
+                {
+                    if(!c.isGameRunning())
+                    {
+                        drawScores(c.getScores());
+                    }
+                    fieldDrawTimer.cancel();
                 }
             }
-            catch (InterruptedException e)
-            {}
-        });
-        drawer.start();
+        },
+                0,
+                TIME_BETWEEN_FRAMES_MILLISECONDS);
     }
 
     private void drawInfo(FieldRenderParameters info)
@@ -125,7 +171,8 @@ public class clientWindowController
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 
@@ -137,7 +184,8 @@ public class clientWindowController
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 
@@ -149,7 +197,8 @@ public class clientWindowController
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 
@@ -161,7 +210,8 @@ public class clientWindowController
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 
@@ -173,7 +223,8 @@ public class clientWindowController
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 
@@ -185,7 +236,8 @@ public class clientWindowController
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 
@@ -197,7 +249,8 @@ public class clientWindowController
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            serverNotRespond.show();
+            App.switchToMenu((Stage)canvas.getScene().getWindow());
         }
     }
 }

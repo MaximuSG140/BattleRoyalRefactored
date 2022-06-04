@@ -26,6 +26,14 @@ public class Game
         }
     }
 
+    public boolean hasPlayer(Player p)
+    {
+        synchronized (playerCommand)
+        {
+            return playerCommand.containsKey(p);
+        }
+    }
+
     public void addPawn(Player owner)
     {
         owner.attachPawn(new Pawn(BEGINNING_PAWN_HP));
@@ -63,27 +71,22 @@ public class Game
     }
 
     public void makeTick() {
-        if(ended())
-        {
+        if (ended()) {
             return;
         }
 
-        if(rng.nextInt(WEAPON_GENERATION_ANTI_COEFFICIENT) == 0)
-        {
+        if (rng.nextInt(WEAPON_GENERATION_ANTI_COEFFICIENT) == 0) {
             gameField.generateWeapon(rng);
         }
-        synchronized (playerCommand)
-        {
+        synchronized (playerCommand) {
             playerCommand.forEach((Player p, CommandInstance c) ->
             {
-                if(p.hasPawn() && !p.getControlledPawn().isAlive())
-                {
+                if (p.hasPawn() && !p.getControlledPawn().isAlive()) {
                     removePawn(p);
                     addPawn(p);
                     return;
                 }
-                if (c != null)
-                {
+                if (c != null) {
                     c.apply(p, this, gameField);
                     playerCommand.put(p, null);
                 }
@@ -93,8 +96,7 @@ public class Game
 
     public FieldRenderParameters getGameInfo()
     {
-        var info = gameField.getRenderInfo();
-        return info;
+        return gameField.getRenderInfo();
     }
 
     public boolean ended()

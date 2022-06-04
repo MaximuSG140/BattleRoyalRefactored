@@ -8,7 +8,7 @@ import static game.menuController.CELL_SIZE_PIXEL;
 
 public class ImageFactory
 {
-    static private HashMap<String, Image> imageByName = new HashMap<>();
+    static private final HashMap<String, Image> imageByName = new HashMap<>();
     static public Image getImage(String name)
     {
         if(!imageByName.containsKey(name))

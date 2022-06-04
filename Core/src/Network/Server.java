@@ -3,20 +3,29 @@ package Network;
 import Controller.CommandFactory.CommandFactory;
 import Model.Game;
 import Model.Player;
-import Threadpool.ThreadPool;
+import Threadpool.DynamicThreadPool;
+import Threadpool.IAsynchronousTaskExecutor;
 import View.FieldRenderParameters;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Server
 {
+    static final int GAME_TIME_QUANTUM_SIZE_MILLISECONDS = 100;
+    static final int SEND_TIME_QUANTUM_SIZE_MILLISECONDS = 500;
+    public static final String SERVER_MESSAGE_ON_GAME_ENDED = "GAMEENDED";
+    public static final String SERVER_MESSAGE_ON_FRAME_ENDED = "ENDOFFRAME";
+    public static final String SERVER_MESSAGE_ON_SCORES_ENDED = "ENDOFSCORE";
+    
     private ServerSocket socket;
     private final HashMap<Socket, String> connectedPlayers = new HashMap<>();
     private final HashMap<String, Player> playerByName = new HashMap<>();
-    private ThreadPool pool;
+    private DynamicThreadPool pool;
     private final Game game = new Game();
 
     private Runnable getTaskForReadingCommands(Socket newConnection)
@@ -30,6 +39,26 @@ public class Server
                 while(true)
                 {
                     var line = reader.readLine();
+                    if(line == null)
+                    {
+                        try
+                        {
+                            synchronized (newConnection)
+                            {
+                                if (!newConnection.isClosed())
+                                {
+                                    newConnection.close();
+                                    synchronized (connectedPlayers)
+                                    {
+                                        connectedPlayers.remove(newConnection);
+                                    }
+                                }
+                            }
+                        }
+                        catch (IOException ex)
+                        {}
+                        return;
+                    }
                     var command = factory.parseCommand(line);
                     synchronized (connectedPlayers)
                     {
@@ -44,10 +73,16 @@ public class Server
             {
                 try
                 {
-                    newConnection.close();
-                    synchronized (connectedPlayers)
+                    synchronized (newConnection)
                     {
-                        connectedPlayers.remove(newConnection);
+                        if (!newConnection.isClosed())
+                        {
+                            newConnection.close();
+                            synchronized (connectedPlayers)
+                            {
+                                connectedPlayers.remove(newConnection);
+                            }
+                        }
                     }
                 }
                 catch (IOException ex)
@@ -67,9 +102,14 @@ public class Server
                 {
                     var info = game.getGameInfo();
                     sendFieldInfo(writer, info);
-                    Thread.sleep(500);
+                    try
+                    {
+                        Thread.sleep(SEND_TIME_QUANTUM_SIZE_MILLISECONDS);
+                    }
+                    catch(InterruptedException e)
+                    {}
                 }
-                writer.write("GAMEENDED\n");
+                writer.write(SERVER_MESSAGE_ON_GAME_ENDED.concat("\n"));
                 writer.flush();
 
                 var lines = game.getScores().toStrings();
@@ -78,14 +118,21 @@ public class Server
                     writer.write(lines[i].concat("\n"));
                     writer.flush();
                 }
-                writer.write("ENDOFSCORE\n");
+                writer.write(SERVER_MESSAGE_ON_SCORES_ENDED.concat("\n"));
                 writer.flush();
             }
-            catch(IOException | InterruptedException e)
+            catch(IOException e)
             {
-                try
-                {
-                    newConnection.close();
+                try {
+                    synchronized (newConnection) {
+                        if (!newConnection.isClosed()) {
+                            newConnection.close();
+                            synchronized (connectedPlayers)
+                            {
+                                connectedPlayers.remove(newConnection);
+                            }
+                        }
+                    }
                 }
                 catch (IOException ex)
                 {}
@@ -101,50 +148,89 @@ public class Server
             {
                 Socket newConnection = socket.accept();
                 var reader = new BufferedReader(new InputStreamReader(newConnection.getInputStream()));
-                synchronized (connectedPlayers)
-                {
+                synchronized (connectedPlayers) {
                     var name = reader.readLine();
                     connectedPlayers.put(newConnection, name);
-                    synchronized (playerByName)
-                    {
-                        if(!playerByName.containsKey(name)) {
+                    synchronized (playerByName) {
+                        if (!playerByName.containsKey(name)) {
                             playerByName.put(name, new Player(name));
                         }
                     }
+                    pool.executeTask(getTaskForReadingCommands(newConnection), connectedPlayers.get(newConnection) + " receive commands");
+                    pool.executeTask(getTaskForSendingInfo(newConnection), connectedPlayers.get(newConnection) + " send frames");
                 }
-                pool.execute(getTaskForReadingCommands(newConnection));
-                pool.execute(getTaskForSendingInfo(newConnection));
             }
             catch (IOException e)
             {
                 game.finish();
+                if(!socket.isClosed())
+                {
+                    try
+                    {
+                        socket.close();
+                    }
+                    catch (IOException ex)
+                    {}
+
+                }
                 return;
             }
         }
     };
 
-    public Server(int maxConnections) throws IOException {
-        pool = new ThreadPool(2 * maxConnections + 1);
+    public Server(int maxConnections) throws IOException
+    {
+        pool = new DynamicThreadPool(2 * maxConnections + 1);
         socket = new ServerSocket(8080, maxConnections);
     }
 
     public void start()
     {
-        pool.execute(listenForNewClients);
-        while (!game.ended())
-        {
-            game.makeTick();
-            try
+        pool.executeTask(listenForNewClients, "ListenForClients");
+        Timer gameIterationExecutor = new Timer();
+        gameIterationExecutor.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run()
             {
-                Thread.sleep(100);
+                    if(!game.ended())
+                    {
+                        game.makeTick();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            socket.close();
+                            gameIterationExecutor.cancel();
+                            synchronized (gameIterationExecutor)
+                            {
+                                gameIterationExecutor.notify();
+                            }
+                        }
+                        catch (IOException e)
+                        {
+                        }
+                    }
+
             }
-            catch (InterruptedException e)
-            {}
+        }, 0, GAME_TIME_QUANTUM_SIZE_MILLISECONDS);
+        while(!game.ended()) {
+            try {
+                synchronized (gameIterationExecutor) {
+                    gameIterationExecutor.wait();
+                }
+            }
+            catch (InterruptedException e) {
+            }
         }
     }
 
     private void sendFieldInfo(OutputStreamWriter writer, FieldRenderParameters info) throws IOException
     {
+        if(info == null)
+        {
+            return;
+        }
         for(var record : info.playerInfo)
         {
             writer.write(record.toString());
@@ -153,12 +239,8 @@ public class Server
         {
             writer.write(record.toString());
         }
-        writer.write("ENDOFFRAME\n");
+        writer.write(SERVER_MESSAGE_ON_FRAME_ENDED.concat("\n"));
         writer.flush();
     }
 
-    public String getAddress()
-    {
-        return socket.getInetAddress().toString();
-    }
 }

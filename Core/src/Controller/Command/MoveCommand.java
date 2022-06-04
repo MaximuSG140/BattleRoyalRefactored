@@ -15,6 +15,10 @@ public class MoveCommand implements ICommand
         {
             return;
         }
+        if(!game.hasPlayer(player))
+        {
+            return;
+        }
         switch(arguments[2])
         {
             case "U":

@@ -1,33 +1,31 @@
 package Network;
 
 import Exceptions.BadServerMessageFormatException;
-import Exceptions.GameEndedException;
 import Exceptions.InvalidServerIPException;
-import Threadpool.ThreadPool;
-import View.EndGameData;
+import Threadpool.DynamicThreadPool;
+import Threadpool.IAsynchronousTaskExecutor;
 import View.FieldRenderParameters;
-import View.PlayerRenderParameters;
-import View.WeaponRenderParameters;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.logging.Logger;
 
-public class Client {
+public class Client
+{
+    static final int SERVER_CONNECTION_TIMEOUT = 5000;
+    static final int SERVER_CONNECTION_PORT = 8080;
+
     private Socket currentServer = new Socket();
-    private ThreadPool pool;
+    private DynamicThreadPool pool;
     private FieldRenderParameters cachedInfo = new FieldRenderParameters();
     private String player;
     private ArrayList<String> scores;
     private boolean gameRunning = true;
+    private boolean serverIsUp = false;
 
     private Runnable serverOutputReadingTask = ()->
     {
@@ -37,12 +35,16 @@ public class Client {
             while (gameRunning)
             {
                 var line = reader.readLine();
+                if(line == null)
+                {
+                    continue;
+                }
                 String[] args = line.split(" ");
                 if(args.length == 1)
                 {
                     switch(args[0])
                     {
-                        case "ENDOFFRAME":
+                        case Server.SERVER_MESSAGE_ON_FRAME_ENDED:
                             synchronized (cachedInfo)
                             {
                                 cachedInfo = info;
@@ -50,7 +52,7 @@ public class Client {
                             }
                             gameRunning = true;
                             break;
-                        case "GAMEENDED":
+                        case Server.SERVER_MESSAGE_ON_GAME_ENDED:
                             scores = readScores(reader);
                             gameRunning = false;
                             break;
@@ -67,14 +69,15 @@ public class Client {
         }
         catch (IOException | BadServerMessageFormatException e)
         {
-            gameRunning = false;
+            serverIsUp = false;
         }
     };
 
 
 
-    public Client(String name) {
-        pool = new ThreadPool(3);
+    public Client(String name)
+    {
+        pool = new DynamicThreadPool(3);
         player = name;
     }
 
@@ -82,15 +85,17 @@ public class Client {
     {
         try
         {
-            currentServer.connect(new InetSocketAddress(address, 8080), 5000);
+            currentServer.connect(new InetSocketAddress(address, SERVER_CONNECTION_PORT), SERVER_CONNECTION_TIMEOUT);
             currentServer.getOutputStream().write(player.getBytes());
             currentServer.getOutputStream().write(System.lineSeparator().getBytes());
+            currentServer.getOutputStream().flush();
         }
         catch (IOException e)
         {
             throw new InvalidServerIPException();
         }
-        pool.execute(serverOutputReadingTask);
+        serverIsUp = true;
+        pool.executeTask(serverOutputReadingTask, " reading map info");
     }
 
     public void send(String line) throws IOException
@@ -111,6 +116,11 @@ public class Client {
         return gameRunning;
     }
 
+    public boolean isServerIsUp()
+    {
+        return serverIsUp;
+    }
+
     public void disconnect()
     {
         try
@@ -127,7 +137,7 @@ public class Client {
     {
         ArrayList<String> lines = new ArrayList<>();
         String line = reader.readLine();
-        while(!line.equals("ENDOFSCORE"))
+        while(!line.equals(Server.SERVER_MESSAGE_ON_SCORES_ENDED))
         {
             lines.add(line);
             line = reader.readLine();
