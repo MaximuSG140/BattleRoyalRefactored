@@ -2,32 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d33307b1-5d87-4721-8c11-beedb2c68b33" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/Bot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/BotController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/BotView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/IController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/IView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/PlayerController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/src/Network/PlayerView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/Controller/Command/MoveCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/Controller/Command/MoveCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/Model/Field.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/Model/Field.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/Model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/Model/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/Network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/Network/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/Network/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/Network/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/Util/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/Util/Position.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/src/View/FieldRenderParameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/Core/src/View/FieldRenderParameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/src/main/java/game/clientWindowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Game/src/main/java/game/clientWindowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/src/main/java/game/menuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Game/src/main/java/game/menuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/target/classes/game/clientWindowController.class" beforeDir="false" afterPath="$PROJECT_DIR$/Game/target/classes/game/clientWindowController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/target/classes/game/menuController.class" beforeDir="false" afterPath="$PROJECT_DIR$/Game/target/classes/game/menuController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/Controller/Command/MoveCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/Controller/Command/MoveCommand.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/Model/Field.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/Model/Field.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/Model/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/Model/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/Network/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/Network/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/Network/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/Network/Server.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/Util/Position.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/Util/Position.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Core/View/FieldRenderParameters.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Core/View/FieldRenderParameters.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +115,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654331196697</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added Finish button">
+      <created>1655627688001</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1655627688001</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -181,42 +163,42 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="496" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1536.824@0.0.1536.824" timestamp="1655451763552" />
-    <state x="382" y="7" key="CommitChangelistDialog2" timestamp="1654331196001">
+    <state x="382" y="7" key="CommitChangelistDialog2" timestamp="1655627685284">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="382" y="7" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1654331196001" />
-    <state width="1493" height="135" key="GridCell.Tab.0.bottom" timestamp="1655624067486">
+    <state x="382" y="7" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1655627685284" />
+    <state width="1493" height="135" key="GridCell.Tab.0.bottom" timestamp="1655633358307">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="135" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1655624067486" />
-    <state width="1493" height="135" key="GridCell.Tab.0.center" timestamp="1655624067486">
+    <state width="1493" height="135" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1655633358307" />
+    <state width="1493" height="135" key="GridCell.Tab.0.center" timestamp="1655633358307">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="135" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1655624067486" />
-    <state width="1493" height="135" key="GridCell.Tab.0.left" timestamp="1655624067486">
+    <state width="1493" height="135" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1655633358307" />
+    <state width="1493" height="135" key="GridCell.Tab.0.left" timestamp="1655633358307">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="135" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1655624067486" />
-    <state width="1493" height="135" key="GridCell.Tab.0.right" timestamp="1655624067486">
+    <state width="1493" height="135" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1655633358307" />
+    <state width="1493" height="135" key="GridCell.Tab.0.right" timestamp="1655633358307">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="135" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1655624067486" />
-    <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1655623807762">
+    <state width="1493" height="135" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1655633358307" />
+    <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1655629821144">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="261" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1655623807762" />
-    <state width="1493" height="261" key="GridCell.Tab.1.center" timestamp="1655623807762">
+    <state width="1493" height="261" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1655629821144" />
+    <state width="1493" height="261" key="GridCell.Tab.1.center" timestamp="1655629821144">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="261" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1655623807762" />
-    <state width="1493" height="261" key="GridCell.Tab.1.left" timestamp="1655623807762">
+    <state width="1493" height="261" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1655629821144" />
+    <state width="1493" height="261" key="GridCell.Tab.1.left" timestamp="1655629821144">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="261" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1655623807762" />
-    <state width="1493" height="261" key="GridCell.Tab.1.right" timestamp="1655623807762">
+    <state width="1493" height="261" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1655629821144" />
+    <state width="1493" height="261" key="GridCell.Tab.1.right" timestamp="1655629821144">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="261" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1655623807762" />
+    <state width="1493" height="261" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1655629821144" />
     <state x="299" y="67" key="Maven.ArtifactSearchDialog" timestamp="1652517655397">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
