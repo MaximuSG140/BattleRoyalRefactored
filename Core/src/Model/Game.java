@@ -39,6 +39,11 @@ public class Game
         owner.attachPawn(new Pawn(BEGINNING_PAWN_HP));
         int x = rng.nextInt(Field.FIELD_SIZE);
         int y = rng.nextInt(Field.FIELD_SIZE);
+        while(gameField.checkoutCell(new Position(x, y)) != null)
+        {
+            x = rng.nextInt(Field.FIELD_SIZE);
+            y = rng.nextInt(Field.FIELD_SIZE);
+        }
         gameField.placePawn(owner.getControlledPawn(), new Position(x, y));
     }
 

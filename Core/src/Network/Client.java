@@ -21,50 +21,19 @@ public class Client
 
     private Socket currentServer = new Socket();
     private DynamicThreadPool pool;
-    private FieldRenderParameters cachedInfo = new FieldRenderParameters();
     private String player;
-    private ArrayList<String> scores;
-    private boolean gameRunning = true;
     private boolean serverIsUp = false;
+    private PlayerController controller;
+    private PlayerView view;
+
 
     private Runnable serverOutputReadingTask = ()->
     {
-        try {
-            var reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(currentServer.getInputStream())));
-            FieldRenderParameters info = new FieldRenderParameters();
-            while (gameRunning)
+        try
+        {
+            while (view.gameRunning())
             {
-                var line = reader.readLine();
-                if(line == null)
-                {
-                    continue;
-                }
-                String[] args = line.split(" ");
-                if(args.length == 1)
-                {
-                    switch(args[0])
-                    {
-                        case Server.SERVER_MESSAGE_ON_FRAME_ENDED:
-                            synchronized (cachedInfo)
-                            {
-                                cachedInfo = info;
-                                info = new FieldRenderParameters();
-                            }
-                            gameRunning = true;
-                            break;
-                        case Server.SERVER_MESSAGE_ON_GAME_ENDED:
-                            scores = readScores(reader);
-                            gameRunning = false;
-                            break;
-                        default:
-                            throw new BadServerMessageFormatException();
-                    }
-                }
-                else
-                {
-                    info.update(args);
-                }
-
+                view.getNewInfo();
             }
         }
         catch (IOException | BadServerMessageFormatException e)
@@ -72,8 +41,6 @@ public class Client
             serverIsUp = false;
         }
     };
-
-
 
     public Client(String name)
     {
@@ -94,26 +61,30 @@ public class Client
         {
             throw new InvalidServerIPException();
         }
+        controller = new PlayerController(currentServer, player);
+        try
+        {
+            view = new PlayerView(currentServer);
+        }
+        catch (IOException e)
+        {}
         serverIsUp = true;
         pool.executeTask(serverOutputReadingTask, " reading map info");
     }
 
     public void send(String line) throws IOException
     {
-        currentServer.getOutputStream().write(player.getBytes());
-        currentServer.getOutputStream().write(' ');
-        currentServer.getOutputStream().write(line.getBytes());
-        currentServer.getOutputStream().flush();
+        controller.send(line);
     }
 
     public FieldRenderParameters getCachedInfo()
     {
-        return cachedInfo;
+        return view.getFieldInfo();
     }
 
     public boolean isGameRunning()
     {
-        return gameRunning;
+        return view.gameRunning();
     }
 
     public boolean isServerIsUp()
@@ -133,20 +104,9 @@ public class Client
         }
     }
 
-    private ArrayList<String> readScores(BufferedReader reader) throws IOException
-    {
-        ArrayList<String> lines = new ArrayList<>();
-        String line = reader.readLine();
-        while(!line.equals(Server.SERVER_MESSAGE_ON_SCORES_ENDED))
-        {
-            lines.add(line);
-            line = reader.readLine();
-        }
-        return lines;
-    }
 
     public ArrayList<String> getScores()
     {
-        return scores;
+        return view.getScores();
     }
 }

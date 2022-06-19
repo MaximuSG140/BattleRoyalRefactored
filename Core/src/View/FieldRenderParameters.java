@@ -4,8 +4,18 @@ import java.util.ArrayList;
 
 public class FieldRenderParameters
 {
-    public ArrayList<PlayerRenderParameters> playerInfo = new ArrayList<>();
-    public ArrayList<WeaponRenderParameters> weaponInfo = new ArrayList<>();
+    private ArrayList<PlayerRenderParameters> playerInfo = new ArrayList<>();
+    private ArrayList<WeaponRenderParameters> weaponInfo = new ArrayList<>();
+
+    public ArrayList<PlayerRenderParameters> getPlayerInfo()
+    {
+        return playerInfo;
+    }
+
+    public ArrayList<WeaponRenderParameters> getWeaponInfo()
+    {
+        return weaponInfo;
+    }
 
     public void update(String[] args)
     {
@@ -25,8 +35,28 @@ public class FieldRenderParameters
                 return;
         }
     }
+
+    public void registerPlayer(PlayerRenderParameters data)
+    {
+        playerInfo.add(data);
+    }
+
+    public void registerWeapon(WeaponRenderParameters data)
+    {
+        weaponInfo.add(data);
+    }
+
     public String toString()
     {
-        return null;
+        StringBuilder result = new StringBuilder();
+        for(var record : playerInfo)
+        {
+            result.append(record.toString());
+        }
+        for(var record : weaponInfo)
+        {
+            result.append(record.toString());
+        }
+        return result.toString();
     }
 }

@@ -17,7 +17,7 @@ import java.net.URL;
 public class menuController
 {
     static final int CELL_SIZE_PIXEL = 30;
-    static final int MAX_CONNECTIONS = 2;
+    static final int MAX_CONNECTIONS = 5;
 
     @FXML
     public TextField serverAddressField;

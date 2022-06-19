@@ -117,22 +117,24 @@ public class clientWindowController
         var field = canvas.getGraphicsContext2D();
         field.setFill(Color.WHITE);
         field.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for(var record : info.weaponInfo)
+        var weaponInfo = info.getWeaponInfo();
+        for(var record : weaponInfo)
         {
             var slicedName = record.type.split("\\.");
             field.drawImage(ImageFactory.getImage("/".concat(slicedName[slicedName.length - 1]) + ".png"), record.x * CELL_SIZE_PIXEL, record.y * CELL_SIZE_PIXEL);
         }
-        for(var record : info.playerInfo)
+        var playerInfo = info.getPlayerInfo();
+        for(var record : playerInfo)
         {
             field.drawImage(ImageFactory.getImage("/Pawn.png"), record.x * CELL_SIZE_PIXEL, record.y * CELL_SIZE_PIXEL);
             field.setFill(Color.BLACK);
-            field.fillText(record.name, record.x* CELL_SIZE_PIXEL, record.y* CELL_SIZE_PIXEL);
+            field.fillText(record.name, record.x * CELL_SIZE_PIXEL, record.y* CELL_SIZE_PIXEL);
             field.setFill(Color.RED);
             field.fillRect(record.x * CELL_SIZE_PIXEL, (record.y + 1) * CELL_SIZE_PIXEL - 5, CELL_SIZE_PIXEL * record.hp / Game.BEGINNING_PAWN_HP, 5);
         }
     }
 
-    private void drawScores( ArrayList<String> scores)
+    private void drawScores(ArrayList<String> scores)
     {
         var field = canvas.getGraphicsContext2D();
         field.setFill(Color.WHITE);

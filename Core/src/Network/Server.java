@@ -4,7 +4,6 @@ import Controller.CommandFactory.CommandFactory;
 import Model.Game;
 import Model.Player;
 import Threadpool.DynamicThreadPool;
-import Threadpool.IAsynchronousTaskExecutor;
 import View.FieldRenderParameters;
 
 import java.io.*;
@@ -16,8 +15,9 @@ import java.util.TimerTask;
 
 public class Server
 {
+    static final int BOTS_AMOUNT = 3;
     static final int GAME_TIME_QUANTUM_SIZE_MILLISECONDS = 100;
-    static final int SEND_TIME_QUANTUM_SIZE_MILLISECONDS = 500;
+    static final int SEND_TIME_QUANTUM_SIZE_MILLISECONDS = 150;
     public static final String SERVER_MESSAGE_ON_GAME_ENDED = "GAMEENDED";
     public static final String SERVER_MESSAGE_ON_FRAME_ENDED = "ENDOFFRAME";
     public static final String SERVER_MESSAGE_ON_SCORES_ENDED = "ENDOFSCORE";
@@ -27,6 +27,7 @@ public class Server
     private final HashMap<String, Player> playerByName = new HashMap<>();
     private DynamicThreadPool pool;
     private final Game game = new Game();
+    private final Bot[] bots = new Bot[BOTS_AMOUNT];
 
     private Runnable getTaskForReadingCommands(Socket newConnection)
     {
@@ -188,7 +189,18 @@ public class Server
 
     public void start()
     {
-        pool.executeTask(listenForNewClients, "ListenForClients");
+        for(int i = 0; i < BOTS_AMOUNT; ++i)
+        {
+            String botName = "BOT" + i;
+            synchronized (playerByName) {
+                playerByName.put(botName, new Player(botName));
+                bots[i] = new Bot(new BotController(game, playerByName.get(botName)), new BotView(game));
+                game.addPlayer(playerByName.get(botName));
+                game.addPawn(playerByName.get(botName));
+            }
+            pool.executeTask(bots[i].taskForBotControl, "Operate bot");
+        }
+        pool.executeTask(listenForNewClients, "Listen for clients");
         Timer gameIterationExecutor = new Timer();
         gameIterationExecutor.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -233,14 +245,7 @@ public class Server
         {
             return;
         }
-        for(var record : info.playerInfo)
-        {
-            writer.write(record.toString());
-        }
-        for(var record : info.weaponInfo)
-        {
-            writer.write(record.toString());
-        }
+        writer.write(info.toString());
         writer.write(SERVER_MESSAGE_ON_FRAME_ENDED.concat("\n"));
         writer.flush();
     }

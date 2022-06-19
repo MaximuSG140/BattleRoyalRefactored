@@ -19,6 +19,10 @@ public class MoveCommand implements ICommand
         {
             return;
         }
+        if(!player.hasPawn())
+        {
+            return;
+        }
         switch(arguments[2])
         {
             case "U":

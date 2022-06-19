@@ -23,68 +23,57 @@ public class Field
     {
         synchronized (pawnPosition)
         {
-            var pawnPos = pawnPosition.get(pawn);
-            var newPos = pawnPos.clone();
+            var pawnPosition = this.pawnPosition.get(pawn);
+            Position newPosition;
             Pawn attackedPawn;
             switch (d)
             {
                 case UP:
-                    newPos.y--;
-                    attackedPawn = checkoutCell(newPos);
+                    newPosition = pawnPosition.up();
+                    attackedPawn = checkoutCell(newPosition);
                     if(attackedPawn != null)
                     {
                         pawn.attack(attackedPawn);
                         break;
                     }
-                    pawnPos.y--;
-                    if(pawnPos.y < 0)
-                    {
-                        pawnPos.y = 0;
-                    }
+                    pawnPosition = newPosition;
+                    pawnPosition.makeValid(FIELD_SIZE, FIELD_SIZE);
                     break;
                 case DOWN:
-                    newPos.y++;
-                    attackedPawn = checkoutCell(newPos);
+                    newPosition = pawnPosition.down();
+                    attackedPawn = checkoutCell(newPosition);
                     if(attackedPawn != null)
                     {
                         pawn.attack(attackedPawn);
                         break;
                     }
-                    pawnPos.y++;
-                    if(pawnPos.y >= FIELD_SIZE)
-                    {
-                        pawnPos.y = FIELD_SIZE - 1;
-                    }
+                    pawnPosition = newPosition;
+                    pawnPosition.makeValid(FIELD_SIZE, FIELD_SIZE);
                     break;
                 case LEFT:
-                    newPos.x--;
-                    attackedPawn = checkoutCell(newPos);
+                    newPosition = pawnPosition.left();
+                    attackedPawn = checkoutCell(newPosition);
                     if(attackedPawn != null)
                     {
                         pawn.attack(attackedPawn);
                         break;
                     }
-                    pawnPos.x--;
-                    if(pawnPos.x < 0)
-                    {
-                        pawnPos.x = 0;
-                    }
+                    pawnPosition = newPosition;
+                    pawnPosition.makeValid(FIELD_SIZE, FIELD_SIZE);
                     break;
                 case RIGHT:
-                    newPos.x++;
-                    attackedPawn = checkoutCell(newPos);
+                    newPosition = pawnPosition.right();
+                    attackedPawn = checkoutCell(newPosition);
                     if(attackedPawn != null)
                     {
                         pawn.attack(attackedPawn);
                         break;
                     }
-                    pawnPos.x++;
-                    if(pawnPos.x >= FIELD_SIZE)
-                    {
-                        pawnPos.x = FIELD_SIZE - 1;
-                    }
+                    pawnPosition = newPosition;
+                    pawnPosition.makeValid(FIELD_SIZE, FIELD_SIZE);
                     break;
             }
+            this.pawnPosition.put(pawn, pawnPosition);
         }
     }
 
@@ -102,10 +91,11 @@ public class Field
         synchronized (pawnPosition)
         {
             var position = pawnPosition.get(p);
-            synchronized (cellsDrop){
-                if(cellsDrop[position.y][position.x] == null)
+            synchronized (cellsDrop)
+            {
+                if(position.getItemAt(cellsDrop) == null)
                 {
-                    cellsDrop[position.y][position.x] = droppedArm;
+                    position.setItemAt(cellsDrop, droppedArm);
                 }
             }
             pawnPosition.remove(p);
@@ -120,8 +110,8 @@ public class Field
             var position = pawnPosition.get(p);
             synchronized (cellsDrop)
             {
-                p.pickUpWeapon(cellsDrop[position.y][position.x]);
-                cellsDrop[position.y][position.x] = droppedArm;
+                p.pickUpWeapon(position.getItemAt(cellsDrop));
+                position.setItemAt(cellsDrop, droppedArm);
             }
         }
     }
@@ -155,7 +145,7 @@ public class Field
                 {
                     if(cellsDrop[y][x] != null)
                     {
-                        info.weaponInfo.add(new WeaponRenderParameters(cellsDrop[y][x].getClass().getName(), x, y));
+                        info.registerWeapon(new WeaponRenderParameters(cellsDrop[y][x].getClass().getName(), x, y));
                     }
                 }
             }
@@ -164,13 +154,16 @@ public class Field
         {
             for (var pawn : pawnPosition.keySet())
             {
-                info.playerInfo.add(new PlayerRenderParameters(pawn.getController().getName(), pawnPosition.get(pawn).x, pawnPosition.get(pawn).y, pawn.getHealthPoints()));
+                info.registerPlayer(new PlayerRenderParameters(pawn.getController().getName(),
+                        pawnPosition.get(pawn).getX(),
+                        pawnPosition.get(pawn).getY(),
+                        pawn.getHealthPoints()));
             }
         }
         return info;
     }
 
-    private Pawn checkoutCell(Position position)
+    public Pawn checkoutCell(Position position)
     {
         synchronized (pawnPosition)
         {
